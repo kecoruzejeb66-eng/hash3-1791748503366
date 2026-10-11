@@ -23,7 +23,6 @@ class Hash3App extends StatelessWidget {
   }
 }
 
-// ============ MainActivity ============
 class MainActivity extends StatefulWidget {
   const MainActivity({super.key});
 
@@ -32,18 +31,18 @@ class MainActivity extends StatefulWidget {
 }
 
 class _MainActivityState extends State<MainActivity> {
-  Future<bool> checkSub() async {
-    final paid = await DwNative.getLocal("HASH3_PAY");
-    return paid == "paid";
-  }
-
-  void openApp(String pkg) async {
+  Future<void> _openApp(String pkg) async {
     final launched = await DwNative.launchApp(pkg);
     if (!launched && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("$pkg not installed")),
+        SnackBar(content: Text('$pkg not installed')),
       );
     }
+  }
+
+  Future<bool> _checkSub() async {
+    final paid = await DwNative.getLocal('HASH3_PAY_paid');
+    return paid == 'true';
   }
 
   @override
@@ -57,10 +56,10 @@ class _MainActivityState extends State<MainActivity> {
             padding: const EdgeInsets.all(20.0),
             child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text(
-                    "HASH3",
+                    'HASH3',
                     style: TextStyle(
                       fontSize: 36,
                       color: Color(0xFF00FF00),
@@ -69,7 +68,6 @@ class _MainActivityState extends State<MainActivity> {
                   ),
                   const SizedBox(height: 20),
                   SizedBox(
-                    width: double.infinity,
                     height: 80,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -87,62 +85,58 @@ class _MainActivityState extends State<MainActivity> {
                         );
                       },
                       child: const Text(
-                        "# AI CAMERA - 4 LENS",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF00FF00),
-                        ),
+                        '# AI CAMERA - 4 LENS',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
-                    width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF222222),
                         foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
-                      onPressed: () => openApp("com.google.android.googlequicksearchbox"),
-                      child: const Text("Google", style: TextStyle(fontSize: 16)),
+                      onPressed: () => _openApp('com.google.android.googlequicksearchbox'),
+                      child: const Text('Google', style: TextStyle(fontSize: 16)),
                     ),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
-                    width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF222222),
                         foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
-                      onPressed: () => openApp("com.android.chrome"),
-                      child: const Text("Chrome", style: TextStyle(fontSize: 16)),
+                      onPressed: () => _openApp('com.android.chrome'),
+                      child: const Text('Chrome', style: TextStyle(fontSize: 16)),
                     ),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
-                    width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF222222),
                         foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
-                      onPressed: () => openApp("com.android.vending"),
-                      child: const Text("PlayStore", style: TextStyle(fontSize: 16)),
+                      onPressed: () => _openApp('com.android.vending'),
+                      child: const Text('PlayStore', style: TextStyle(fontSize: 16)),
                     ),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
-                    width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF00FF00),
                         foregroundColor: const Color(0xFF000000),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       onPressed: () {
                         Navigator.push(
@@ -151,26 +145,22 @@ class _MainActivityState extends State<MainActivity> {
                         );
                       },
                       child: const Text(
-                        "BulkSMS Gateway",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF000000),
-                        ),
+                        'BulkSMS Gateway',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
-                    width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFFD700),
                         foregroundColor: const Color(0xFF000000),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       onPressed: () async {
-                        final paid = await checkSub();
+                        final paid = await _checkSub();
                         if (!context.mounted) return;
                         if (paid) {
                           Navigator.push(
@@ -185,12 +175,8 @@ class _MainActivityState extends State<MainActivity> {
                         }
                       },
                       child: const Text(
-                        "Data Gateway (30k/Year)",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF000000),
-                        ),
+                        'Data Gateway (30k/Year)',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -204,7 +190,6 @@ class _MainActivityState extends State<MainActivity> {
   }
 }
 
-// ============ BulkSmsActivity ============
 class BulkSmsActivity extends StatefulWidget {
   const BulkSmsActivity({super.key});
 
@@ -213,41 +198,45 @@ class BulkSmsActivity extends StatefulWidget {
 }
 
 class _BulkSmsActivityState extends State<BulkSmsActivity> {
-  final _numbersController = TextEditingController();
-  final _messageController = TextEditingController();
-  bool _sending = false;
+  final TextEditingController _numbersController = TextEditingController();
+  final TextEditingController _messageController = TextEditingController();
+  String _status = '';
 
-  void sendBulk() async {
-    final numbersText = _numbersController.text.trim();
+  void _sendBulk() {
+    final rawNumbers = _numbersController.text.trim();
     final message = _messageController.text.trim();
-    if (numbersText.isEmpty || message.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter recipient numbers and message")),
-      );
+    if (rawNumbers.isEmpty || message.isEmpty) {
+      setState(() {
+        _status = 'Please provide numbers and message';
+      });
       return;
     }
-    final numbers = numbersText
-        .split(RegExp(r'[\n,]+'))
-        .map((s) => s.trim())
-        .where((s) => s.isNotEmpty)
+    final numbers = rawNumbers
+        .split(RegExp(r'[,\n]'))
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
         .toList();
 
-    setState(() => _sending = true);
-    await Future.delayed(const Duration(seconds: 1));
-    if (!mounted) return;
-    setState(() => _sending = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Sent message to ${numbers.length} numbers successfully")),
-    );
+    setState(() {
+      _status = 'Sent message to ${numbers.length} numbers successfully.';
+    });
+  }
+
+  @override
+  void dispose() {
+    _numbersController.dispose();
+    _messageController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF000000),
       appBar: AppBar(
-        title: const Text("BulkSMS Gateway"),
-        backgroundColor: Colors.black,
+        title: const Text('BulkSMS Gateway', style: TextStyle(color: Color(0xFF00FF00))),
+        backgroundColor: const Color(0xFF111111),
+        iconTheme: const IconThemeData(color: Color(0xFF00FF00)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -258,9 +247,14 @@ class _BulkSmsActivityState extends State<BulkSmsActivity> {
               maxLines: 3,
               style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
-                labelText: "Phone Numbers (comma or newline separated)",
+                labelText: 'Phone Numbers (comma or newline separated)',
                 labelStyle: TextStyle(color: Color(0xFF00FF00)),
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF00FF00)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF00FF00), width: 2),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -269,9 +263,14 @@ class _BulkSmsActivityState extends State<BulkSmsActivity> {
               maxLines: 4,
               style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
-                labelText: "Message",
+                labelText: 'Message',
                 labelStyle: TextStyle(color: Color(0xFF00FF00)),
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF00FF00)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF00FF00), width: 2),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -281,15 +280,20 @@ class _BulkSmsActivityState extends State<BulkSmsActivity> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF00FF00),
-                  foregroundColor: Colors.black,
+                  foregroundColor: const Color(0xFF000000),
                 ),
-                onPressed: _sending ? null : sendBulk,
-                child: Text(
-                  _sending ? "Sending..." : "Send Bulk SMS",
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+                onPressed: _sendBulk,
+                child: const Text('Send Bulk SMS', style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
+            if (_status.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text(
+                _status,
+                style: const TextStyle(color: Color(0xFF00FF00), fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ],
         ),
       ),
@@ -297,7 +301,6 @@ class _BulkSmsActivityState extends State<BulkSmsActivity> {
   }
 }
 
-// ============ DataGatewayActivity ============
 class DataGatewayActivity extends StatefulWidget {
   const DataGatewayActivity({super.key});
 
@@ -306,30 +309,36 @@ class DataGatewayActivity extends StatefulWidget {
 }
 
 class _DataGatewayActivityState extends State<DataGatewayActivity> {
-  final _phoneController = TextEditingController();
-  String _network = "MTN";
-  String _plan = "1GB SME - 300 NGN";
+  final TextEditingController _phoneController = TextEditingController();
+  String _network = 'MTN';
+  String _plan = '1GB - 30 Days';
+  String _status = '';
 
-  void sellData() {
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  void _sellData() {
     final phone = _phoneController.text.trim();
     if (phone.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter recipient phone number")),
-      );
+      setState(() => _status = 'Enter recipient phone number');
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Data sent to $phone ($_network, $_plan)")),
-    );
+    setState(() {
+      _status = 'Dispatched $_plan for $phone via $_network VTU Gateway.';
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF000000),
       appBar: AppBar(
-        title: const Text("Data Gateway"),
-        backgroundColor: Colors.black,
+        title: const Text('Data Gateway', style: TextStyle(color: Color(0xFFFFD700))),
+        backgroundColor: const Color(0xFF111111),
+        iconTheme: const IconThemeData(color: Color(0xFFFFD700)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -340,9 +349,14 @@ class _DataGatewayActivityState extends State<DataGatewayActivity> {
               keyboardType: TextInputType.phone,
               style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
-                labelText: "Recipient Phone Number",
+                labelText: 'Recipient Phone Number',
                 labelStyle: TextStyle(color: Color(0xFFFFD700)),
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFFFFD700)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFFFFD700), width: 2),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -351,14 +365,18 @@ class _DataGatewayActivityState extends State<DataGatewayActivity> {
               dropdownColor: const Color(0xFF111111),
               style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
-                labelText: "Network",
+                labelText: 'Network',
                 labelStyle: TextStyle(color: Color(0xFFFFD700)),
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFFFFD700)),
+                ),
               ),
-              items: ["MTN", "AIRTEL", "GLO", "9MOBILE"]
-                  .map((n) => DropdownMenuItem(value: n, child: Text(n)))
+              items: ['MTN', 'AIRTEL', 'GLO', '9MOBILE']
+                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                   .toList(),
-              onChanged: (val) => setState(() => _network = val ?? "MTN"),
+              onChanged: (val) {
+                if (val != null) setState(() => _network = val);
+              },
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
@@ -366,17 +384,18 @@ class _DataGatewayActivityState extends State<DataGatewayActivity> {
               dropdownColor: const Color(0xFF111111),
               style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
-                labelText: "Data Plan",
+                labelText: 'Data Plan',
                 labelStyle: TextStyle(color: Color(0xFFFFD700)),
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFFFFD700)),
+                ),
               ),
-              items: [
-                "1GB SME - 300 NGN",
-                "2GB SME - 600 NGN",
-                "5GB SME - 1500 NGN",
-                "10GB Corporate - 3000 NGN",
-              ].map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
-              onChanged: (val) => setState(() => _plan = val ?? _plan),
+              items: ['1GB - 30 Days', '2GB - 30 Days', '5GB - 30 Days', '10GB - 30 Days']
+                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                  .toList(),
+              onChanged: (val) {
+                if (val != null) setState(() => _plan = val);
+              },
             ),
             const SizedBox(height: 20),
             SizedBox(
@@ -385,15 +404,20 @@ class _DataGatewayActivityState extends State<DataGatewayActivity> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFD700),
-                  foregroundColor: Colors.black,
+                  foregroundColor: const Color(0xFF000000),
                 ),
-                onPressed: sellData,
-                child: const Text(
-                  "Sell Data",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+                onPressed: _sellData,
+                child: const Text('Sell Data', style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
+            if (_status.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text(
+                _status,
+                style: const TextStyle(color: Color(0xFFFFD700), fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ],
         ),
       ),
@@ -401,7 +425,6 @@ class _DataGatewayActivityState extends State<DataGatewayActivity> {
   }
 }
 
-// ============ PaymentActivity ============
 class PaymentActivity extends StatefulWidget {
   const PaymentActivity({super.key});
 
@@ -410,30 +433,28 @@ class PaymentActivity extends StatefulWidget {
 }
 
 class _PaymentActivityState extends State<PaymentActivity> {
-  bool _processing = false;
+  bool _isProcessing = false;
+  String _message = '';
 
-  void pay() async {
-    setState(() => _processing = true);
+  Future<void> _payNow() async {
+    setState(() => _isProcessing = true);
     await Future.delayed(const Duration(seconds: 1));
-    await DwNative.setLocal("HASH3_PAY", "paid");
+    await DwNative.setLocal('HASH3_PAY_paid', 'true');
     if (!mounted) return;
-    setState(() => _processing = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Payment successful! Data Gateway unlocked.")),
-    );
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const DataGatewayActivity()),
-    );
+    setState(() {
+      _isProcessing = false;
+      _message = 'Payment Verified! 30,000 NGN Annual Subscription Activated.';
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF000000),
       appBar: AppBar(
-        title: const Text("Data Gateway Subscription"),
-        backgroundColor: Colors.black,
+        title: const Text('Payment Gateway', style: TextStyle(color: Color(0xFFFFD700))),
+        backgroundColor: const Color(0xFF111111),
+        iconTheme: const IconThemeData(color: Color(0xFFFFD700)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -443,30 +464,47 @@ class _PaymentActivityState extends State<PaymentActivity> {
             const Icon(Icons.payment, size: 80, color: Color(0xFFFFD700)),
             const SizedBox(height: 20),
             const Text(
-              "Activate Data Gateway",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+              'HASH3 Data Gateway',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             const Text(
-              "Fee: 30,000 NGN per year",
-              style: TextStyle(fontSize: 18, color: Color(0xFFFFD700)),
+              'Fee: 30,000 NGN / Year',
+              style: TextStyle(fontSize: 20, color: Color(0xFFFFD700), fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 30),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFD700),
-                  foregroundColor: Colors.black,
-                ),
-                onPressed: _processing ? null : pay,
-                child: Text(
-                  _processing ? "Processing Paystack..." : "Pay 30,000 NGN (Paystack)",
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            if (_isProcessing)
+              const CircularProgressIndicator(color: Color(0xFFFFD700))
+            else
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFD700),
+                    foregroundColor: const Color(0xFF000000),
+                  ),
+                  onPressed: _payNow,
+                  child: const Text(
+                    'Pay with Paystack (30,000 NGN)',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
-            ),
+            if (_message.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              Text(
+                _message,
+                style: const TextStyle(color: Color(0xFF00FF00), fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF222222)),
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Return to Home', style: TextStyle(color: Colors.white)),
+              ),
+            ],
           ],
         ),
       ),
@@ -474,54 +512,80 @@ class _PaymentActivityState extends State<PaymentActivity> {
   }
 }
 
-// ============ AiCameraActivity ============
 class AiCameraActivity extends StatelessWidget {
   const AiCameraActivity({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF000000),
       appBar: AppBar(
-        title: const Text("# AI CAMERA - 4 LENS"),
-        backgroundColor: Colors.black,
+        title: const Text('# AI CAMERA - 4 LENS', style: TextStyle(color: Color(0xFF00FF00))),
+        backgroundColor: const Color(0xFF111111),
+        iconTheme: const IconThemeData(color: Color(0xFF00FF00)),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 8,
-          mainAxisSpacing: 8,
-          children: [
-            _lensView("LENS #1 (Wide Angle)"),
-            _lensView("LENS #2 (Ultra Wide)"),
-            _lensView("LENS #3 (Telephoto)"),
-            _lensView("LENS #4 (Macro / Depth)"),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _lensView(String label) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF111111),
-        border: Border.all(color: const Color(0xFF00FF00), width: 1.5),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Center(
+      body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.camera_alt, color: Color(0xFF00FF00), size: 40),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Color(0xFF00FF00),
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  children: List.generate(4, (index) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF111111),
+                        border: Border.all(color: const Color(0xFF00FF00), width: 1.5),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.camera_alt, color: Color(0xFF00FF00), size: 40),
+                          const SizedBox(height: 8),
+                          Text(
+                            'LENS #${index + 1}',
+                            style: const TextStyle(
+                              color: Color(0xFF00FF00),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            'Active Sensor',
+                            style: TextStyle(color: Colors.white54, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00FF00),
+                    foregroundColor: const Color(0xFF000000),
+                  ),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Quad-lens AI capture complete!')),
+                    );
+                  },
+                  icon: const Icon(Icons.shutter_speed),
+                  label: const Text(
+                    'CAPTURE 4-LENS AI SHOT',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
               ),
             ),
           ],
@@ -535,6 +599,7 @@ class AiCameraActivity extends StatelessWidget {
 // Built-in backend — accounts and data API, provided by Danger World Builder.
 // Do not edit or redefine this class; use it from your screens.
 // ---------------------------------------------------------------------------
+
 
 
 // ---------------------------------------------------------------------------
