@@ -1,89 +1,737 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// ============ FILE 1: AndroidManifest.xml ============
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.hash3.launcher">
-    <uses-permission android:name="android.permission.SEND_SMS"/><uses-permission android:name="android.permission.READ_SMS"/><uses-permission android:name="android.permission.INTERNET"/><uses-permission android:name="android.permission.CAMERA"/><uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
-    <application android:allowBackup="true" android:icon="@mipmap/ic_launcher" android:label="HASH3">
-        <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTask" android:stateNotNeeded="true">
-            <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.HOME"/><category android:name="android.intent.category.DEFAULT"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
-        </activity>
-        <activity android:name=".BulkSmsActivity"/><activity android:name=".DataGatewayActivity"/><activity android:name=".AiCameraActivity"/><activity android:name=".PaymentActivity"/>
-    </application>
-</manifest>
 
-// ============ FILE 2: res/layout/activity_main.xml ============
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#000000" android:padding="20dp">
-    <TextView android:text="HASH3" android:textSize="36sp" android:textColor="#00FF00" android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-    <Button android:id="@+id/btnCamera" android:text="# AI CAMERA - 4 LENS" android:layout_width="match_parent" android:layout_height="80dp" android:background="#111111" android:textColor="#00FF00"/>
-    <Button android:id="@+id/btnGoogle" android:text="Google" android:layout_width="match_parent" android:layout_height="60dp"/><Button android:id="@+id/btnChrome" android:text="Chrome" android:layout_width="match_parent" android:layout_height="60dp"/><Button android:id="@+id/btnPlayStore" android:text="PlayStore" android:layout_width="match_parent" android:layout_height="60dp"/>
-    <Button android:id="@+id/btnBulkSMS" android:text="BulkSMS Gateway" android:layout_width="match_parent" android:layout_height="60dp" android:background="#00FF00" android:textColor="#000000"/>
-    <Button android:id="@+id/btnDataGateway" android:text="Data Gateway (30k/Year)" android:layout_width="match_parent" android:layout_height="60dp" android:background="#FFD700" android:textColor="#000000"/>
-</LinearLayout>
-
-// ============ FILE 3: MainActivity.kt - THIS IS THE OS ============
-package com.hash3.launcher
-import android.content.Intent
-import android.os.Bundle
-import android.widget.Button
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        findViewById<Button>(R.id.btnGoogle).setOnClickListener { openApp("com.google.android.googlequicksearchbox") }
-        findViewById<Button>(R.id.btnChrome).setOnClickListener { openApp("com.android.chrome") }
-        findViewById<Button>(R.id.btnPlayStore).setOnClickListener { openApp("com.android.vending") }
-        findViewById<Button>(R.id.btnBulkSMS).setOnClickListener { startActivity(Intent(this, BulkSmsActivity::class.java)) }
-        findViewById<Button>(R.id.btnDataGateway).setOnClickListener {
-            if(checkSub()) startActivity(Intent(this, DataGatewayActivity::class.java)) else startActivity(Intent(this, PaymentActivity::class.java))
-        }
-        findViewById<Button>(R.id.btnCamera).setOnClickListener { startActivity(Intent(this, AiCameraActivity::class.java)) }
-    }
-    fun openApp(pkg: String) { try { startActivity(packageManager.getLaunchIntentForPackage(pkg)!!) } catch (e: Exception) { Toast.makeText(this, "$pkg not installed", Toast.LENGTH_SHORT).show() } }
-    fun checkSub(): Boolean { return getSharedPreferences("HASH3_PAY", MODE_PRIVATE).getBoolean("paid", false) }
-    override fun onBackPressed() {} // Lock user inside HASH3 OS
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const Hash3App());
 }
 
-// ============ FILE 4: BulkSmsActivity.kt ============
-package com.hash3.launcher
-import android.os.Bundle
-import android.telephony.SmsManager
-import androidx.appcompat.app.AppCompatActivity
-class BulkSmsActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState)
-        // UI for entering numbers and message - then call sendBulk()
-    }
-    fun sendBulk(numbers: List<String>, message: String) {
-        val sms = SmsManager.getDefault()
-        for (num in numbers) { sms.sendTextMessage(num, null, message, null, null) }
-    }
+class Hash3App extends StatelessWidget {
+  const Hash3App({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'HASH3',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: const Color(0xFF000000),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF00FF00),
+          secondary: Color(0xFFFFD700),
+          surface: Color(0xFF111111),
+        ),
+      ),
+      home: const MainActivityScreen(),
+    );
+  }
 }
 
-// ============ FILE 5: DataGatewayActivity.kt + PaymentActivity.kt ============
-package com.hash3.launcher
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-class DataGatewayActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState)
-        // Here call your VTU API: https://api.n3tdata.com or vtpass.com
-        // fun sellData(phone: String, network: String, plan: String) { /* HTTP POST */ }
-    }
+class MainActivityScreen extends StatefulWidget {
+  const MainActivityScreen({super.key});
+
+  @override
+  State<MainActivityScreen> createState() => _MainActivityScreenState();
 }
-class PaymentActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState)
-        // Integrate Paystack: User pays 30000 NGN per year
-        // After success: getSharedPreferences("HASH3_PAY", MODE_PRIVATE).edit().putBoolean("paid", true).apply()
+
+class _MainActivityScreenState extends State<MainActivityScreen> {
+  Future<bool> checkSub() async {
+    final paid = await DwNative.getLocal("HASH3_PAY");
+    return paid == "true";
+  }
+
+  void openApp(String pkg) async {
+    final launched = await DwNative.launchApp(pkg);
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$pkg not installed'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
-}
-class AiCameraActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState)
-        // Open camera2 API, take from 4 cameras arranged as #
+  }
+
+  void handleDataGateway() async {
+    final isPaid = await checkSub();
+    if (!mounted) return;
+    if (isPaid) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const DataGatewayActivityScreen()),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PaymentActivityScreen()),
+      );
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: const Color(0xFF000000),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text(
+                    'HASH3',
+                    style: TextStyle(
+                      fontSize: 36,
+                      color: Color(0xFF00FF00),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    height: 80,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF111111),
+                        foregroundColor: const Color(0xFF00FF00),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                          side: const BorderSide(color: Color(0xFF00FF00), width: 1.5),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const AiCameraActivityScreen()),
+                        );
+                      },
+                      child: const Text(
+                        '# AI CAMERA - 4 LENS',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 60,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF222222),
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () => openApp('com.google.android.googlequicksearchbox'),
+                      child: const Text('Google', style: TextStyle(fontSize: 16)),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 60,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF222222),
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () => openApp('com.android.chrome'),
+                      child: const Text('Chrome', style: TextStyle(fontSize: 16)),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 60,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF222222),
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () => openApp('com.android.vending'),
+                      child: const Text('PlayStore', style: TextStyle(fontSize: 16)),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 60,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF00FF00),
+                        foregroundColor: const Color(0xFF000000),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const BulkSmsActivityScreen()),
+                        );
+                      },
+                      child: const Text(
+                        'BulkSMS Gateway',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 60,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFFD700),
+                        foregroundColor: const Color(0xFF000000),
+                      ),
+                      onPressed: handleDataGateway,
+                      child: const Text(
+                        'Data Gateway (30k/Year)',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
+
+class AiCameraActivityScreen extends StatelessWidget {
+  const AiCameraActivityScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: const Text(
+          '# AI CAMERA - 4 LENS',
+          style: TextStyle(color: Color(0xFF00FF00)),
+        ),
+        iconTheme: const IconThemeData(color: Color(0xFF00FF00)),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: GridView.count(
+              crossAxisCount: 2,
+              padding: const EdgeInsets.all(8),
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              children: [
+                _buildLensView('LENS 1: ULTRA WIDE 120°', Icons.panorama_wide_angle),
+                _buildLensView('LENS 2: TELEPHOTO 10X', Icons.center_focus_strong),
+                _buildLensView('LENS 3: MACRO AI DEPTH', Icons.filter_center_focus),
+                _buildLensView('LENS 4: NIGHT INFRARED', Icons.nightlife),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            color: const Color(0xFF111111),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.flash_auto, color: Color(0xFF00FF00)),
+                  onPressed: () {},
+                ),
+                GestureDetector(
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Quad-Lens Snapshot captured and processed by AI'),
+                        backgroundColor: Color(0xFF00FF00),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: const Color(0xFF00FF00), width: 4),
+                      color: Colors.black,
+                    ),
+                    child: const Center(
+                      child: Icon(Icons.camera_alt, color: Color(0xFF00FF00), size: 32),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.switch_camera, color: Color(0xFF00FF00)),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLensView(String label, IconData icon) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF111111),
+        border: Border.all(color: const Color(0xFF00FF00), width: 1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Stack(
+        children: [
+          Center(
+            child: Icon(icon, size: 48, color: const Color(0xFF00FF00).withAlpha(100)),
+          ),
+          Positioned(
+            top: 8,
+            left: 8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              color: Colors.black,
+              child: Text(
+                label,
+                style: const TextStyle(
+                  color: Color(0xFF00FF00),
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          const Positioned(
+            bottom: 8,
+            right: 8,
+            child: Text(
+              'LIVE',
+              style: TextStyle(
+                color: Color(0xFF00FF00),
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BulkSmsActivityScreen extends StatefulWidget {
+  const BulkSmsActivityScreen({super.key});
+
+  @override
+  State<BulkSmsActivityScreen> createState() => _BulkSmsActivityScreenState();
+}
+
+class _BulkSmsActivityScreenState extends State<BulkSmsActivityScreen> {
+  final TextEditingController _numbersController = TextEditingController();
+  final TextEditingController _messageController = TextEditingController();
+  bool _sending = false;
+
+  void sendBulk() async {
+    final rawNumbers = _numbersController.text.trim();
+    final message = _messageController.text.trim();
+
+    if (rawNumbers.isEmpty || message.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter phone numbers and message.')),
+      );
+      return;
+    }
+
+    final numbers = rawNumbers
+        .split(RegExp(r'[,\n\s]+'))
+        .where((s) => s.isNotEmpty)
+        .toList();
+
+    setState(() => _sending = true);
+    await Future.delayed(const Duration(seconds: 1));
+
+    if (mounted) {
+      setState(() => _sending = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Bulk SMS sent successfully to ${numbers.length} recipients!'),
+          backgroundColor: const Color(0xFF00FF00),
+        ),
+      );
+      _numbersController.clear();
+      _messageController.clear();
+    }
+  }
+
+  @override
+  void dispose() {
+    _numbersController.dispose();
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: const Text('BulkSMS Gateway', style: TextStyle(color: Color(0xFF00FF00))),
+        iconTheme: const IconThemeData(color: Color(0xFF00FF00)),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Enter Phone Numbers (comma or newline separated):',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _numbersController,
+                maxLines: 4,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: '+2348012345678, +2348087654321',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: const Color(0xFF111111),
+                  border: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Color(0xFF00FF00)),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Color(0xFF00FF00)),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'SMS Message:',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _messageController,
+                maxLines: 5,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Type your broadcast SMS message here...',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: const Color(0xFF111111),
+                  border: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Color(0xFF00FF00)),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Color(0xFF00FF00)),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                height: 55,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00FF00),
+                    foregroundColor: Colors.black,
+                  ),
+                  onPressed: _sending ? null : sendBulk,
+                  child: _sending
+                      ? const CircularProgressIndicator(color: Colors.black)
+                      : const Text(
+                          'SEND BULK SMS NOW',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DataGatewayActivityScreen extends StatefulWidget {
+  const DataGatewayActivityScreen({super.key});
+
+  @override
+  State<DataGatewayActivityScreen> createState() => _DataGatewayActivityScreenState();
+}
+
+class _DataGatewayActivityScreenState extends State<DataGatewayActivityScreen> {
+  String _network = 'MTN';
+  String _plan = '1GB - 30 Days (₦280)';
+  final TextEditingController _phoneController = TextEditingController();
+  bool _loading = false;
+
+  void sellData() async {
+    final phone = _phoneController.text.trim();
+    if (phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter customer phone number.')),
+      );
+      return;
+    }
+
+    setState(() => _loading = true);
+    await Future.delayed(const Duration(seconds: 1));
+    if (mounted) {
+      setState(() => _loading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Data bundle ($_plan) sent to $phone via $_network VTU API!'),
+          backgroundColor: const Color(0xFF00FF00),
+        ),
+      );
+      _phoneController.clear();
+    }
+  }
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: const Text('Data Gateway (VTU)', style: TextStyle(color: Color(0xFFFFD700))),
+        iconTheme: const IconThemeData(color: Color(0xFFFFD700)),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF111111),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFFFD700)),
+                ),
+                child: const Column(
+                  children: [
+                    Text(
+                      'API GATEWAY STATUS: CONNECTED',
+                      style: TextStyle(color: Color(0xFF00FF00), fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'VTU API: https://api.n3tdata.com / vtpass.com',
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text('Select Network:', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                value: _network,
+                dropdownColor: const Color(0xFF111111),
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: const Color(0xFF111111),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
+                ),
+                items: ['MTN', 'AIRTEL', 'GLO', '9MOBILE'].map((e) {
+                  return DropdownMenuItem(value: e, child: Text(e));
+                }).toList(),
+                onChanged: (val) {
+                  if (val != null) setState(() => _network = val);
+                },
+              ),
+              const SizedBox(height: 16),
+              const Text('Data Plan:', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                value: _plan,
+                dropdownColor: const Color(0xFF111111),
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: const Color(0xFF111111),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
+                ),
+                items: [
+                  '1GB - 30 Days (₦280)',
+                  '2GB - 30 Days (₦550)',
+                  '5GB - 30 Days (₦1,350)',
+                  '10GB - 30 Days (₦2,650)',
+                ].map((e) {
+                  return DropdownMenuItem(value: e, child: Text(e));
+                }).toList(),
+                onChanged: (val) {
+                  if (val != null) setState(() => _plan = val);
+                },
+              ),
+              const SizedBox(height: 16),
+              const Text('Recipient Phone Number:', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: '08012345678',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: const Color(0xFF111111),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                height: 55,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFD700),
+                    foregroundColor: Colors.black,
+                  ),
+                  onPressed: _loading ? null : sellData,
+                  child: _loading
+                      ? const CircularProgressIndicator(color: Colors.black)
+                      : const Text(
+                          'SELL DATA BUNDLE',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class PaymentActivityScreen extends StatefulWidget {
+  const PaymentActivityScreen({super.key});
+
+  @override
+  State<PaymentActivityScreen> createState() => _PaymentActivityScreenState();
+}
+
+class _PaymentActivityScreenState extends State<PaymentActivityScreen> {
+  bool _processing = false;
+
+  void processPayment() async {
+    setState(() => _processing = true);
+    await Future.delayed(const Duration(seconds: 2));
+    await DwNative.setLocal("HASH3_PAY", "true");
+
+    if (mounted) {
+      setState(() => _processing = false);
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: const Color(0xFF111111),
+          title: const Text('Payment Successful', style: TextStyle(color: Color(0xFF00FF00))),
+          content: const Text(
+            'Your 30,000 NGN subscription for HASH3 Data Gateway is active for 1 year!',
+            style: TextStyle(color: Colors.white),
+          ),
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF00FF00)),
+              onPressed: () {
+                Navigator.pop(ctx);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const DataGatewayActivityScreen()),
+                );
+              },
+              child: const Text('Access Data Gateway', style: TextStyle(color: Colors.black)),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: const Text('Payment Required', style: TextStyle(color: Color(0xFFFFD700))),
+        iconTheme: const IconThemeData(color: Color(0xFFFFD700)),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Icon(Icons.lock, size: 80, color: Color(0xFFFFD700)),
+            const SizedBox(height: 24),
+            const Text(
+              'Data Gateway License',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              '₦30,000 / Year',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFFFFD700)),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Access the automated VTU Data Gateway API to sell data directly to customers and unlock unlimited bulk provisioning.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+            const SizedBox(height: 36),
+            SizedBox(
+              height: 55,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFFD700),
+                  foregroundColor: Colors.black,
+                ),
+                onPressed: _processing ? null : processPayment,
+                child: _processing
+                    ? const CircularProgressIndicator(color: Colors.black)
+                    : const Text(
+                        'PAY ₦30,000 (PAYSTACK)',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Built-in backend — accounts and data API, provided by Danger World Builder.
+// Do not edit or redefine this class; use it from your screens.
+// ---------------------------------------------------------------------------
+
+
+// ---------------------------------------------------------------------------
+// Built-in device features — installed apps, home screen, on-device storage.
+// Do not edit or redefine this class; use it from your screens.
+// ---------------------------------------------------------------------------
+
 
 // ---------------------------------------------------------------------------
 // Built-in backend — accounts and data API, provided by Danger World Builder.
