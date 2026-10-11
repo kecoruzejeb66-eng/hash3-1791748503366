@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
   runApp(const Hash3App());
 }
 
@@ -18,54 +17,31 @@ class Hash3App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: const Color(0xFF000000),
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF00FF00),
-          secondary: Color(0xFFFFD700),
-          surface: Color(0xFF111111),
-        ),
       ),
-      home: const MainActivityScreen(),
+      home: const MainActivity(),
     );
   }
 }
 
-class MainActivityScreen extends StatefulWidget {
-  const MainActivityScreen({super.key});
+// ============ MainActivity ============
+class MainActivity extends StatefulWidget {
+  const MainActivity({super.key});
 
   @override
-  State<MainActivityScreen> createState() => _MainActivityScreenState();
+  State<MainActivity> createState() => _MainActivityState();
 }
 
-class _MainActivityScreenState extends State<MainActivityScreen> {
+class _MainActivityState extends State<MainActivity> {
   Future<bool> checkSub() async {
     final paid = await DwNative.getLocal("HASH3_PAY");
-    return paid == "true";
+    return paid == "paid";
   }
 
   void openApp(String pkg) async {
     final launched = await DwNative.launchApp(pkg);
     if (!launched && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$pkg not installed'),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    }
-  }
-
-  void handleDataGateway() async {
-    final isPaid = await checkSub();
-    if (!mounted) return;
-    if (isPaid) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const DataGatewayActivityScreen()),
-      );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const PaymentActivityScreen()),
+        SnackBar(content: Text("$pkg not installed")),
       );
     }
   }
@@ -81,10 +57,10 @@ class _MainActivityScreenState extends State<MainActivityScreen> {
             padding: const EdgeInsets.all(20.0),
             child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'HASH3',
+                    "HASH3",
                     style: TextStyle(
                       fontSize: 36,
                       color: Color(0xFF00FF00),
@@ -93,66 +69,75 @@ class _MainActivityScreenState extends State<MainActivityScreen> {
                   ),
                   const SizedBox(height: 20),
                   SizedBox(
+                    width: double.infinity,
                     height: 80,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF111111),
                         foregroundColor: const Color(0xFF00FF00),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                          side: const BorderSide(color: Color(0xFF00FF00), width: 1.5),
+                          borderRadius: BorderRadius.circular(8),
+                          side: const BorderSide(color: Color(0xFF00FF00), width: 1),
                         ),
                       ),
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const AiCameraActivityScreen()),
+                          MaterialPageRoute(builder: (_) => const AiCameraActivity()),
                         );
                       },
                       child: const Text(
-                        '# AI CAMERA - 4 LENS',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        "# AI CAMERA - 4 LENS",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF00FF00),
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
+                    width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF222222),
                         foregroundColor: Colors.white,
                       ),
-                      onPressed: () => openApp('com.google.android.googlequicksearchbox'),
-                      child: const Text('Google', style: TextStyle(fontSize: 16)),
+                      onPressed: () => openApp("com.google.android.googlequicksearchbox"),
+                      child: const Text("Google", style: TextStyle(fontSize: 16)),
                     ),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
+                    width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF222222),
                         foregroundColor: Colors.white,
                       ),
-                      onPressed: () => openApp('com.android.chrome'),
-                      child: const Text('Chrome', style: TextStyle(fontSize: 16)),
+                      onPressed: () => openApp("com.android.chrome"),
+                      child: const Text("Chrome", style: TextStyle(fontSize: 16)),
                     ),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
+                    width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF222222),
                         foregroundColor: Colors.white,
                       ),
-                      onPressed: () => openApp('com.android.vending'),
-                      child: const Text('PlayStore', style: TextStyle(fontSize: 16)),
+                      onPressed: () => openApp("com.android.vending"),
+                      child: const Text("PlayStore", style: TextStyle(fontSize: 16)),
                     ),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
+                    width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -162,27 +147,50 @@ class _MainActivityScreenState extends State<MainActivityScreen> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const BulkSmsActivityScreen()),
+                          MaterialPageRoute(builder: (_) => const BulkSmsActivity()),
                         );
                       },
                       child: const Text(
-                        'BulkSMS Gateway',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        "BulkSMS Gateway",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF000000),
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
+                    width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFFD700),
                         foregroundColor: const Color(0xFF000000),
                       ),
-                      onPressed: handleDataGateway,
+                      onPressed: () async {
+                        final paid = await checkSub();
+                        if (!context.mounted) return;
+                        if (paid) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const DataGatewayActivity()),
+                          );
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const PaymentActivity()),
+                          );
+                        }
+                      },
                       child: const Text(
-                        'Data Gateway (30k/Year)',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        "Data Gateway (30k/Year)",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF000000),
+                        ),
                       ),
                     ),
                   ),
@@ -196,176 +204,41 @@ class _MainActivityScreenState extends State<MainActivityScreen> {
   }
 }
 
-class AiCameraActivityScreen extends StatelessWidget {
-  const AiCameraActivityScreen({super.key});
+// ============ BulkSmsActivity ============
+class BulkSmsActivity extends StatefulWidget {
+  const BulkSmsActivity({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text(
-          '# AI CAMERA - 4 LENS',
-          style: TextStyle(color: Color(0xFF00FF00)),
-        ),
-        iconTheme: const IconThemeData(color: Color(0xFF00FF00)),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 2,
-              padding: const EdgeInsets.all(8),
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-              children: [
-                _buildLensView('LENS 1: ULTRA WIDE 120°', Icons.panorama_wide_angle),
-                _buildLensView('LENS 2: TELEPHOTO 10X', Icons.center_focus_strong),
-                _buildLensView('LENS 3: MACRO AI DEPTH', Icons.filter_center_focus),
-                _buildLensView('LENS 4: NIGHT INFRARED', Icons.nightlife),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            color: const Color(0xFF111111),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.flash_auto, color: Color(0xFF00FF00)),
-                  onPressed: () {},
-                ),
-                GestureDetector(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Quad-Lens Snapshot captured and processed by AI'),
-                        backgroundColor: Color(0xFF00FF00),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFF00FF00), width: 4),
-                      color: Colors.black,
-                    ),
-                    child: const Center(
-                      child: Icon(Icons.camera_alt, color: Color(0xFF00FF00), size: 32),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.switch_camera, color: Color(0xFF00FF00)),
-                  onPressed: () {},
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLensView(String label, IconData icon) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF111111),
-        border: Border.all(color: const Color(0xFF00FF00), width: 1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Stack(
-        children: [
-          Center(
-            child: Icon(icon, size: 48, color: const Color(0xFF00FF00).withAlpha(100)),
-          ),
-          Positioned(
-            top: 8,
-            left: 8,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              color: Colors.black,
-              child: Text(
-                label,
-                style: const TextStyle(
-                  color: Color(0xFF00FF00),
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          const Positioned(
-            bottom: 8,
-            right: 8,
-            child: Text(
-              'LIVE',
-              style: TextStyle(
-                color: Color(0xFF00FF00),
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  State<BulkSmsActivity> createState() => _BulkSmsActivityState();
 }
 
-class BulkSmsActivityScreen extends StatefulWidget {
-  const BulkSmsActivityScreen({super.key});
-
-  @override
-  State<BulkSmsActivityScreen> createState() => _BulkSmsActivityScreenState();
-}
-
-class _BulkSmsActivityScreenState extends State<BulkSmsActivityScreen> {
-  final TextEditingController _numbersController = TextEditingController();
-  final TextEditingController _messageController = TextEditingController();
+class _BulkSmsActivityState extends State<BulkSmsActivity> {
+  final _numbersController = TextEditingController();
+  final _messageController = TextEditingController();
   bool _sending = false;
 
   void sendBulk() async {
-    final rawNumbers = _numbersController.text.trim();
+    final numbersText = _numbersController.text.trim();
     final message = _messageController.text.trim();
-
-    if (rawNumbers.isEmpty || message.isEmpty) {
+    if (numbersText.isEmpty || message.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter phone numbers and message.')),
+        const SnackBar(content: Text("Please enter recipient numbers and message")),
       );
       return;
     }
-
-    final numbers = rawNumbers
-        .split(RegExp(r'[,\n\s]+'))
+    final numbers = numbersText
+        .split(RegExp(r'[\n,]+'))
+        .map((s) => s.trim())
         .where((s) => s.isNotEmpty)
         .toList();
 
     setState(() => _sending = true);
     await Future.delayed(const Duration(seconds: 1));
-
-    if (mounted) {
-      setState(() => _sending = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Bulk SMS sent successfully to ${numbers.length} recipients!'),
-          backgroundColor: const Color(0xFF00FF00),
-        ),
-      );
-      _numbersController.clear();
-      _messageController.clear();
-    }
-  }
-
-  @override
-  void dispose() {
-    _numbersController.dispose();
-    _messageController.dispose();
-    super.dispose();
+    if (!mounted) return;
+    setState(() => _sending = false);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Sent message to ${numbers.length} numbers successfully")),
+    );
   }
 
   @override
@@ -373,294 +246,81 @@ class _BulkSmsActivityScreenState extends State<BulkSmsActivityScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        title: const Text("BulkSMS Gateway"),
         backgroundColor: Colors.black,
-        title: const Text('BulkSMS Gateway', style: TextStyle(color: Color(0xFF00FF00))),
-        iconTheme: const IconThemeData(color: Color(0xFF00FF00)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'Enter Phone Numbers (comma or newline separated):',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        child: Column(
+          children: [
+            TextField(
+              controller: _numbersController,
+              maxLines: 3,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: "Phone Numbers (comma or newline separated)",
+                labelStyle: TextStyle(color: Color(0xFF00FF00)),
+                border: OutlineInputBorder(),
               ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _numbersController,
-                maxLines: 4,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: '+2348012345678, +2348087654321',
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  filled: true,
-                  fillColor: const Color(0xFF111111),
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFF00FF00)),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFF00FF00)),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _messageController,
+              maxLines: 4,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: "Message",
+                labelStyle: TextStyle(color: Color(0xFF00FF00)),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00FF00),
+                  foregroundColor: Colors.black,
+                ),
+                onPressed: _sending ? null : sendBulk,
+                child: Text(
+                  _sending ? "Sending..." : "Send Bulk SMS",
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
-              const SizedBox(height: 16),
-              const Text(
-                'SMS Message:',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _messageController,
-                maxLines: 5,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Type your broadcast SMS message here...',
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  filled: true,
-                  fillColor: const Color(0xFF111111),
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFF00FF00)),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFF00FF00)),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                height: 55,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00FF00),
-                    foregroundColor: Colors.black,
-                  ),
-                  onPressed: _sending ? null : sendBulk,
-                  child: _sending
-                      ? const CircularProgressIndicator(color: Colors.black)
-                      : const Text(
-                          'SEND BULK SMS NOW',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class DataGatewayActivityScreen extends StatefulWidget {
-  const DataGatewayActivityScreen({super.key});
-
-  @override
-  State<DataGatewayActivityScreen> createState() => _DataGatewayActivityScreenState();
-}
-
-class _DataGatewayActivityScreenState extends State<DataGatewayActivityScreen> {
-  String _network = 'MTN';
-  String _plan = '1GB - 30 Days (₦280)';
-  final TextEditingController _phoneController = TextEditingController();
-  bool _loading = false;
-
-  void sellData() async {
-    final phone = _phoneController.text.trim();
-    if (phone.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter customer phone number.')),
-      );
-      return;
-    }
-
-    setState(() => _loading = true);
-    await Future.delayed(const Duration(seconds: 1));
-    if (mounted) {
-      setState(() => _loading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Data bundle ($_plan) sent to $phone via $_network VTU API!'),
-          backgroundColor: const Color(0xFF00FF00),
-        ),
-      );
-      _phoneController.clear();
-    }
-  }
-
-  @override
-  void dispose() {
-    _phoneController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text('Data Gateway (VTU)', style: TextStyle(color: Color(0xFFFFD700))),
-        iconTheme: const IconThemeData(color: Color(0xFFFFD700)),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF111111),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFFFD700)),
-                ),
-                child: const Column(
-                  children: [
-                    Text(
-                      'API GATEWAY STATUS: CONNECTED',
-                      style: TextStyle(color: Color(0xFF00FF00), fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'VTU API: https://api.n3tdata.com / vtpass.com',
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text('Select Network:', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                value: _network,
-                dropdownColor: const Color(0xFF111111),
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: const Color(0xFF111111),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
-                ),
-                items: ['MTN', 'AIRTEL', 'GLO', '9MOBILE'].map((e) {
-                  return DropdownMenuItem(value: e, child: Text(e));
-                }).toList(),
-                onChanged: (val) {
-                  if (val != null) setState(() => _network = val);
-                },
-              ),
-              const SizedBox(height: 16),
-              const Text('Data Plan:', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                value: _plan,
-                dropdownColor: const Color(0xFF111111),
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: const Color(0xFF111111),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
-                ),
-                items: [
-                  '1GB - 30 Days (₦280)',
-                  '2GB - 30 Days (₦550)',
-                  '5GB - 30 Days (₦1,350)',
-                  '10GB - 30 Days (₦2,650)',
-                ].map((e) {
-                  return DropdownMenuItem(value: e, child: Text(e));
-                }).toList(),
-                onChanged: (val) {
-                  if (val != null) setState(() => _plan = val);
-                },
-              ),
-              const SizedBox(height: 16),
-              const Text('Recipient Phone Number:', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: '08012345678',
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  filled: true,
-                  fillColor: const Color(0xFF111111),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
-                ),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                height: 55,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFD700),
-                    foregroundColor: Colors.black,
-                  ),
-                  onPressed: _loading ? null : sellData,
-                  child: _loading
-                      ? const CircularProgressIndicator(color: Colors.black)
-                      : const Text(
-                          'SELL DATA BUNDLE',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class PaymentActivityScreen extends StatefulWidget {
-  const PaymentActivityScreen({super.key});
-
-  @override
-  State<PaymentActivityScreen> createState() => _PaymentActivityScreenState();
-}
-
-class _PaymentActivityScreenState extends State<PaymentActivityScreen> {
-  bool _processing = false;
-
-  void processPayment() async {
-    setState(() => _processing = true);
-    await Future.delayed(const Duration(seconds: 2));
-    await DwNative.setLocal("HASH3_PAY", "true");
-
-    if (mounted) {
-      setState(() => _processing = false);
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (ctx) => AlertDialog(
-          backgroundColor: const Color(0xFF111111),
-          title: const Text('Payment Successful', style: TextStyle(color: Color(0xFF00FF00))),
-          content: const Text(
-            'Your 30,000 NGN subscription for HASH3 Data Gateway is active for 1 year!',
-            style: TextStyle(color: Colors.white),
-          ),
-          actions: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF00FF00)),
-              onPressed: () {
-                Navigator.pop(ctx);
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const DataGatewayActivityScreen()),
-                );
-              },
-              child: const Text('Access Data Gateway', style: TextStyle(color: Colors.black)),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ============ DataGatewayActivity ============
+class DataGatewayActivity extends StatefulWidget {
+  const DataGatewayActivity({super.key});
+
+  @override
+  State<DataGatewayActivity> createState() => _DataGatewayActivityState();
+}
+
+class _DataGatewayActivityState extends State<DataGatewayActivity> {
+  final _phoneController = TextEditingController();
+  String _network = "MTN";
+  String _plan = "1GB SME - 300 NGN";
+
+  void sellData() {
+    final phone = _phoneController.text.trim();
+    if (phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter recipient phone number")),
       );
+      return;
     }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Data sent to $phone ($_network, $_plan)")),
+    );
   }
 
   @override
@@ -668,50 +328,200 @@ class _PaymentActivityScreenState extends State<PaymentActivityScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        title: const Text("Data Gateway"),
         backgroundColor: Colors.black,
-        title: const Text('Payment Required', style: TextStyle(color: Color(0xFFFFD700))),
-        iconTheme: const IconThemeData(color: Color(0xFFFFD700)),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Icon(Icons.lock, size: 80, color: Color(0xFFFFD700)),
-            const SizedBox(height: 24),
-            const Text(
-              'Data Gateway License',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              '₦30,000 / Year',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFFFFD700)),
+            TextField(
+              controller: _phoneController,
+              keyboardType: TextInputType.phone,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: "Recipient Phone Number",
+                labelStyle: TextStyle(color: Color(0xFFFFD700)),
+                border: OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Access the automated VTU Data Gateway API to sell data directly to customers and unlock unlimited bulk provisioning.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey, fontSize: 14),
+            DropdownButtonFormField<String>(
+              value: _network,
+              dropdownColor: const Color(0xFF111111),
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: "Network",
+                labelStyle: TextStyle(color: Color(0xFFFFD700)),
+                border: OutlineInputBorder(),
+              ),
+              items: ["MTN", "AIRTEL", "GLO", "9MOBILE"]
+                  .map((n) => DropdownMenuItem(value: n, child: Text(n)))
+                  .toList(),
+              onChanged: (val) => setState(() => _network = val ?? "MTN"),
             ),
-            const SizedBox(height: 36),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _plan,
+              dropdownColor: const Color(0xFF111111),
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: "Data Plan",
+                labelStyle: TextStyle(color: Color(0xFFFFD700)),
+                border: OutlineInputBorder(),
+              ),
+              items: [
+                "1GB SME - 300 NGN",
+                "2GB SME - 600 NGN",
+                "5GB SME - 1500 NGN",
+                "10GB Corporate - 3000 NGN",
+              ].map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
+              onChanged: (val) => setState(() => _plan = val ?? _plan),
+            ),
+            const SizedBox(height: 20),
             SizedBox(
-              height: 55,
+              width: double.infinity,
+              height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFD700),
                   foregroundColor: Colors.black,
                 ),
-                onPressed: _processing ? null : processPayment,
-                child: _processing
-                    ? const CircularProgressIndicator(color: Colors.black)
-                    : const Text(
-                        'PAY ₦30,000 (PAYSTACK)',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
+                onPressed: sellData,
+                child: const Text(
+                  "Sell Data",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============ PaymentActivity ============
+class PaymentActivity extends StatefulWidget {
+  const PaymentActivity({super.key});
+
+  @override
+  State<PaymentActivity> createState() => _PaymentActivityState();
+}
+
+class _PaymentActivityState extends State<PaymentActivity> {
+  bool _processing = false;
+
+  void pay() async {
+    setState(() => _processing = true);
+    await Future.delayed(const Duration(seconds: 1));
+    await DwNative.setLocal("HASH3_PAY", "paid");
+    if (!mounted) return;
+    setState(() => _processing = false);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Payment successful! Data Gateway unlocked.")),
+    );
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const DataGatewayActivity()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: const Text("Data Gateway Subscription"),
+        backgroundColor: Colors.black,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.payment, size: 80, color: Color(0xFFFFD700)),
+            const SizedBox(height: 20),
+            const Text(
+              "Activate Data Gateway",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              "Fee: 30,000 NGN per year",
+              style: TextStyle(fontSize: 18, color: Color(0xFFFFD700)),
+            ),
+            const SizedBox(height: 30),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFFD700),
+                  foregroundColor: Colors.black,
+                ),
+                onPressed: _processing ? null : pay,
+                child: Text(
+                  _processing ? "Processing Paystack..." : "Pay 30,000 NGN (Paystack)",
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============ AiCameraActivity ============
+class AiCameraActivity extends StatelessWidget {
+  const AiCameraActivity({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: const Text("# AI CAMERA - 4 LENS"),
+        backgroundColor: Colors.black,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: GridView.count(
+          crossAxisCount: 2,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+          children: [
+            _lensView("LENS #1 (Wide Angle)"),
+            _lensView("LENS #2 (Ultra Wide)"),
+            _lensView("LENS #3 (Telephoto)"),
+            _lensView("LENS #4 (Macro / Depth)"),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _lensView(String label) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF111111),
+        border: Border.all(color: const Color(0xFF00FF00), width: 1.5),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.camera_alt, color: Color(0xFF00FF00), size: 40),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Color(0xFF00FF00),
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
               ),
             ),
           ],
